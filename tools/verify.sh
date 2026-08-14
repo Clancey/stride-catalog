@@ -69,6 +69,37 @@ for index, app in enumerate(apps):
     if not isinstance(app.get("sizeBytes"), int) or app.get("sizeBytes", 0) <= 0:
         problems.append(f"{where} has a non-positive sizeBytes")
 
+    # Splits are optional, but a bad one is as fatal as a bad base: the install session writes
+    # every part or none, so an unfetchable split means the app cannot be installed at all.
+    splits = app.get("splits")
+    if splits is not None:
+        if not isinstance(splits, list) or not splits:
+            problems.append(f"{where} splits must be a non-empty list when present")
+            splits = []
+        names = set()
+        for split_index, split in enumerate(splits):
+            swhere = f"{where}.splits[{split_index}]"
+            name = split.get("name", "")
+            if not name:
+                problems.append(f"{swhere} has no name")
+            if name in names:
+                problems.append(f"{swhere} duplicates split name {name}")
+            names.add(name)
+            if not str(split.get("url", "")).startswith("https://"):
+                problems.append(f"{swhere} url is not https")
+            if not hex64.match(str(split.get("sha256", ""))):
+                problems.append(f"{swhere} sha256 is not a 64-char lowercase hex digest")
+            if not isinstance(split.get("sizeBytes"), int) or split.get("sizeBytes", 0) <= 0:
+                problems.append(f"{swhere} has a non-positive sizeBytes")
+        # Two ABI splits in one session is rejected by the platform at install time. Catching it
+        # here means it fails in CI rather than on a console already out in the field.
+        abi_splits = [n for n in names if n.startswith("config.") and n.split(".", 1)[1] in
+                      ("arm64_v8a", "armeabi_v7a", "x86", "x86_64", "armeabi", "mips")]
+        if len(abi_splits) > 1:
+            joined = ", ".join(sorted(abi_splits))
+            problems.append(f"{where} has {len(abi_splits)} abi splits ({joined});"
+                            " a single install session accepts only one")
+
 if strides > 1:
     problems.append(f"catalog declares {strides} stride entries; at most one is allowed")
 
@@ -78,10 +109,17 @@ if problems:
     sys.exit(3)
 
 for app in apps:
+    # One row per artifact. Splits are fetched exactly like the base, because on the device they
+    # are exactly as required as the base.
     print("\t".join([
-        app["package"], str(app["versionCode"]), app["url"],
+        app["package"], str(app["versionCode"]), "base", app["url"],
         str(app["sizeBytes"]), app["sha256"],
     ]))
+    for split in app.get("splits") or []:
+        print("\t".join([
+            app["package"], str(app["versionCode"]), split["name"], split["url"],
+            str(split["sizeBytes"]), split["sha256"],
+        ]))
 PY
 )" || { echo "catalog is structurally invalid - a console would reject it whole." >&2; exit 1; }
 
@@ -94,9 +132,13 @@ if [[ -z "$ENTRIES" ]]; then
 fi
 
 FAILED=0
-while IFS=$'\t' read -r package version_code url want_size want_sha; do
+while IFS=$'\t' read -r package version_code label url want_size want_sha; do
     [[ -n "$package" ]] || continue
-    printf '\n%s (versionCode %s)\n  %s\n' "$package" "$version_code" "$url"
+    if [[ "$label" == base ]]; then
+        printf '\n%s (versionCode %s)\n  %s\n' "$package" "$version_code" "$url"
+    else
+        printf '  split %s\n  %s\n' "$label" "$url"
+    fi
 
     TMP="$(mktemp)"
     if ! curl -fsSL --max-time 900 -o "$TMP" "$url"; then

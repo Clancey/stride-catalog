@@ -1,22 +1,22 @@
 {
   "schema": 1,
-  "generated": "2026-08-14T18:59:16Z",
+  "generated": "2026-08-14T19:12:36Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 2,
-      "versionName": "1.0.1",
+      "versionCode": 3,
+      "versionName": "1.0.2",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-2/io.stride.spikes-2.apk",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-3/io.stride.spikes-3.apk",
       "sizeBytes": 52759620,
-      "sha256": "ee910f8052828ba1f6cd92acbfef91f7755e6ce37676f3d8acad7c31f1d53904",
+      "sha256": "8beba219f281a04e6e329108b2578bb690f08420ccb622c464fc0b336434d229",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59"
     },
     {
@@ -123,6 +123,41 @@
       "sizeBytes": 145376763,
       "sha256": "a347eac03923a63793bcfe0e179ab0a021490ac54fa541846ad0bdd10e0b4ae3",
       "signerSha256": "6505b181933344f93893d586e399b94616183f04349cb572a9e81a3335e28ffd"
+    },
+    {
+      "package": "tv.pluto.android",
+      "role": "app",
+      "name": "Pluto TV",
+      "versionCode": 510400248,
+      "versionName": "5.66.0-leanback",
+      "minSdk": 21,
+      "abis": [
+        "arm64-v8a"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/tv.pluto.android/tv.pluto.android-510400248.apk",
+      "sizeBytes": 25321427,
+      "sha256": "e0e895e44d12049048dfd34fe0e2505c140cea42ba7c04b6a233a62a60128d2e",
+      "signerSha256": "29946c49261522d69e4daf1110b400d9341736be25517700a81ccbfde130e96c",
+      "splits": [
+        {
+          "name": "config.arm64_v8a",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/tv.pluto.android/tv.pluto.android-510400248-config.arm64_v8a.apk",
+          "sha256": "4401148e4ad93042ffaa29dec44fa74694ddbeac49c800f4c8bbd35df9e705bf",
+          "sizeBytes": 4035328
+        },
+        {
+          "name": "config.en",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/tv.pluto.android/tv.pluto.android-510400248-config.en.apk",
+          "sha256": "c3e476c699b54dbdb0dc7de75e487457a3320b4cce72b2a495e496d216793bba",
+          "sizeBytes": 168345
+        },
+        {
+          "name": "config.xhdpi",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/tv.pluto.android/tv.pluto.android-510400248-config.xhdpi.apk",
+          "sha256": "03f0a3ba100a2e1e03106173eb17c8a436a05b584263e9decd3872680ba7e832",
+          "sizeBytes": 382270
+        }
+      ]
     }
   ]
 }

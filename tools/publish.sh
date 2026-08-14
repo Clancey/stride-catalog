@@ -63,6 +63,10 @@ APK="$1"; shift
 [[ -f "$APK" ]] || { echo "no such file: $APK" >&2; exit 1; }
 
 ROLE="app"; NAME=""; NOTES=""; URL_OVERRIDE=""; BACKEND=""; REQUIRES_GMS="false"
+# Which config splits to publish from a bundle. These match the consoles we know: arm64, English,
+# xhdpi. Installing more than one ABI in a session is rejected by the platform, so this is a
+# choice that has to be made somewhere - better here, visibly, than silently at install time.
+SPLIT_SELECT="config.arm64_v8a,config.en,config.xhdpi"
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --role)    ROLE="${2:-}"; shift 2 ;;
@@ -71,6 +75,7 @@ while [[ $# -gt 0 ]]; do
         --backend) BACKEND="${2:-}"; shift 2 ;;
         --url)     URL_OVERRIDE="${2:-}"; BACKEND="url"; shift 2 ;;
         --requires-gms) REQUIRES_GMS="true"; shift ;;
+        --splits) SPLIT_SELECT="${2:-}"; shift 2 ;;
         *) usage ;;
     esac
 done
@@ -96,6 +101,7 @@ if ! command -v aapt2 >/dev/null 2>&1 || ! command -v apksigner >/dev/null 2>&1;
   done
 fi
 
+die() { echo "error: $*" >&2; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || { echo "missing required tool: $1" >&2; exit 1; }; }
 need python3; need curl
 command -v aapt2 >/dev/null 2>&1 && command -v apksigner >/dev/null 2>&1 || {
@@ -110,12 +116,11 @@ source "$ROOT/tools/r2-lib.sh"
 
 # ------------------------------------------------------------------ read the APK
 
-# Refuse split bundles before doing anything expensive.
+# Detect split bundles (XAPK/APKM) and unpack them.
 #
-# XAPK/APKM files from the mirror sites are a zip *of* APKs - a base plus config.<abi>, config.<dpi>
-# and per-language splits - not an APK. aapt2 does fail on them, but only with "could not identify
-# format of APK", which reads like a corrupt download rather than "this format needs a different
-# installer", so name it properly here.
+# These are a zip *of* APKs - a base plus config.<abi>, config.<dpi> and per-language splits - not
+# an APK. aapt2 fails on them only with "could not identify format of APK", which reads like a
+# corrupt download rather than "this is a different format", so it is identified properly here.
 #
 # The discriminator is a root AndroidManifest.xml: every real APK has one, no bundle does. Member
 # filenames are not reliable - the base inside an XAPK is often named <package>.apk, not base.apk.
@@ -123,27 +128,55 @@ source "$ROOT/tools/r2-lib.sh"
 # The listing is captured once rather than piped straight into grep: under `set -o pipefail`, a
 # `grep -q` that exits early on a match hands unzip a SIGPIPE, and the pipeline then reports
 # failure precisely when the manifest *was* found - inverting this check on every valid APK.
-#
-# Installing a bundle needs a multi-write PackageInstaller session with every required split staged
-# into it. ApkInstaller opens a single-artifact session, and the catalog schema pins exactly one url
-# and one sha256 per entry, so there is nowhere to even record the other splits. Publishing just the
-# base APK is not a workaround: it installs and then dies at launch on a missing native library.
+SPLIT_FILES=()
+# name|url|sha256|sizeBytes for each published split, consumed by the catalog writer below.
+SPLIT_META=()
 ZIP_LISTING="$(unzip -l "$APK" 2>/dev/null || true)"
 if ! grep -qE '(^| )AndroidManifest\.xml$' <<<"$ZIP_LISTING"; then
-    SPLITS="$(sed -n 's/^ *[0-9][0-9]*  *[^ ]*  *[^ ]*  *\(.*\.apk\)$/    \1/p' <<<"$ZIP_LISTING")"
-    cat >&2 <<EOF
-refusing: $(basename "$APK") has no AndroidManifest.xml, so it is not an APK.
+    MEMBERS="$(sed -n 's/^ *[0-9][0-9]*  *[^ ]*  *[^ ]*  *\(.*\.apk\)$/\1/p' <<<"$ZIP_LISTING")"
+    [[ -n "$MEMBERS" ]] || die "$(basename "$APK") has no AndroidManifest.xml and contains no APKs - corrupt?"
 
-It looks like a split bundle (XAPK/APKM) containing:
-${SPLITS:-    (no .apk members found - it may simply be corrupt)}
+    BUNDLE_DIR="$(mktemp -d)"
+    trap 'rm -rf "$BUNDLE_DIR"' EXIT
+    unzip -q -o "$APK" -d "$BUNDLE_DIR"
 
-A console installs one artifact per catalog entry, so there is nowhere to stage the
-config splits alongside the base. Shipping the base alone installs an app that
-crashes at launch on a missing native library.
+    # The base is the member that is itself a real APK with a root manifest. Identify it by
+    # inspection rather than by name, for the same reason as above.
+    BASE=""
+    while IFS= read -r m; do
+        [[ -n "$m" ]] || continue
+        [[ "$(basename "$m")" != config.* ]] || continue
+        # Captured into a variable first, for the pipefail/SIGPIPE reason documented above: piping
+        # unzip straight into `grep -q` inverts this test on exactly the member we are looking for.
+        member_listing="$(unzip -l "$BUNDLE_DIR/$m" 2>/dev/null || true)"
+        if grep -qE '(^| )AndroidManifest\.xml$' <<<"$member_listing"; then
+            BASE="$BUNDLE_DIR/$m"
+            break
+        fi
+    done <<<"$MEMBERS"
+    [[ -n "$BASE" ]] || die "could not find a base APK inside $(basename "$APK")"
 
-Get a universal (single-file) APK for this package instead.
-EOF
-    exit 1
+    # Only the splits this hardware can use. Installing every ABI at once is rejected by the
+    # platform, and shipping ten languages would triple the download for a console that shows one.
+    # Overridable with --splits for a device that needs different ones.
+    for want in ${SPLIT_SELECT//,/ }; do
+        for m in $MEMBERS; do
+            if [[ "$(basename "$m" .apk)" == "$want" ]]; then
+                SPLIT_FILES+=("$BUNDLE_DIR/$m")
+                break
+            fi
+        done
+    done
+
+    echo "split bundle: base $(basename "$BASE") + ${#SPLIT_FILES[@]} split(s)" >&2
+    for s in "${SPLIT_FILES[@]}"; do echo "  $(basename "$s")" >&2; done
+    [[ ${#SPLIT_FILES[@]} -gt 0 ]] || die "none of the requested splits ($SPLIT_SELECT) are in this bundle.
+Available:
+$(sed 's/^/  /' <<<"$MEMBERS")
+Choose with --splits name1,name2"
+
+    # Everything downstream describes the app from the base APK.
+    APK="$BASE"
 fi
 
 BADGING="$(aapt2 dump badging "$APK")"
@@ -171,7 +204,20 @@ VERSION_NAME="$(pkg_field versionName)"
 # aapt2 writes this one as `minSdkVersion:'28'` on its own line - a colon, not an equals sign.
 MIN_SDK="$(sed -n "s/^minSdkVersion:'\([^']*\)'.*/\1/p" <<<"$BADGING" | head -1)"
 [[ -n "$MIN_SDK" ]] || MIN_SDK=0
-ABIS="$(sed -n "s/^native-code: //p" <<<"$BADGING" | tr -d "'" | tr ' ' '\n' | grep -v '^$' | paste -sd, -)"
+ABIS="$(sed -n "s/^native-code: //p" <<<"$BADGING" | tr -d "'" | tr ' ' '\n' | grep -v '^$' | paste -sd, - || true)"
+# A bundle's base APK carries no native code - it lives in the config.<abi> split. Read the ABI
+# back off the split names we selected, or the entry would claim to support no architecture at all.
+if [[ -z "$ABIS" && ${#SPLIT_FILES[@]} -gt 0 ]]; then
+    for f in "${SPLIT_FILES[@]}"; do
+        sname="$(basename "$f" .apk)"
+        case "$sname" in
+            config.arm64_v8a)   ABIS="${ABIS:+$ABIS,}arm64-v8a" ;;
+            config.armeabi_v7a) ABIS="${ABIS:+$ABIS,}armeabi-v7a" ;;
+            config.x86_64)      ABIS="${ABIS:+$ABIS,}x86_64" ;;
+            config.x86)         ABIS="${ABIS:+$ABIS,}x86" ;;
+        esac
+    done
+fi
 
 # Validate rather than trust. Every one of these fired as a silent wrong value at least once while
 # this script was being written, and a wrong package name is not a cosmetic problem: it is the R2
@@ -263,6 +309,16 @@ signing certificate of the asset attached here; a console verifies both before i
         echo "uploading to r2://$R2_BUCKET/$KEY" >&2
         r2_put "$APK" "$KEY" "$R2_APK_TYPE" "$R2_APK_CACHE"
         URL="$(r2_public_url "$KEY")"
+
+        # Splits go beside the base under the same package/versionCode prefix, so everything for
+        # one install is deleted or audited together.
+        for f in "${SPLIT_FILES[@]}"; do
+            sname="$(basename "$f" .apk)"
+            skey="apks/$PACKAGE/$PACKAGE-$VERSION_CODE-$sname.apk"
+            echo "uploading split to r2://$R2_BUCKET/$skey" >&2
+            r2_put "$f" "$skey" "$R2_APK_TYPE" "$R2_APK_CACHE"
+            SPLIT_META+=("$sname|$(r2_public_url "$skey")|$(sha256_of "$f")|$(wc -c <"$f" | tr -d " ")")
+        done
         ;;
     url)
         URL="$URL_OVERRIDE"
@@ -309,6 +365,19 @@ entry = {
 }
 if "$REQUIRES_GMS" == "true":
     entry["requiresGms"] = True
+
+# Config splits, if this came from an app bundle. Passed as name|url|sha256|size lines rather than
+# as JSON because assembling nested JSON in shell is how quoting bugs get published.
+splits = []
+for line in """$(printf '%s\n' "${SPLIT_META[@]+"${SPLIT_META[@]}"}")""".splitlines():
+    line = line.strip()
+    if not line:
+        continue
+    name, url, sha, size = line.split("|")
+    splits.append({"name": name, "url": url, "sha256": sha, "sizeBytes": int(size)})
+if splits:
+    entry["splits"] = splits
+
 notes = "$NOTES"
 if notes:
     entry["releaseNotesUrl"] = notes
