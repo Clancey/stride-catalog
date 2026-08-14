@@ -1,7 +1,11 @@
-# stride-catalog
+# Stride
 
-The update catalog for **[Stride](https://github.com/Clancey/stride)** — a launcher and workout
-overlay that replaces the stock software on an iFit treadmill console.
+A launcher and workout overlay that replaces the stock software on an iFit treadmill console.
+This repo is the update catalog it reads: **[Stride's source lives here](https://github.com/Clancey/stride)**.
+
+<p align="center">
+  <a href="https://www.buymeacoffee.com/clancey"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-clancey-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee"></a>
+</p>
 
 > **Tested on one machine: a NordicTrack Commercial 1750.**
 > That is the only console Stride has ever run on. Other iFit machines use the same Android
@@ -119,10 +123,3 @@ a console will install is a reviewable commit.
 
 Publishing a build, the `catalog.json` schema, and R2 setup are in
 **[PUBLISHING.md](PUBLISHING.md)**.
-
-## Support
-
-Stride is free, and built for one treadmill in one basement that turned out to be useful to other
-people. If it saved your console from its stock software:
-
-<a href="https://www.buymeacoffee.com/clancey"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-clancey-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee"></a>
