@@ -131,6 +131,7 @@ source "$ROOT/tools/r2-lib.sh"
 SPLIT_FILES=()
 # name|url|sha256|sizeBytes for each published split, consumed by the catalog writer below.
 SPLIT_META=()
+ICON_URL=""
 ZIP_LISTING="$(unzip -l "$APK" 2>/dev/null || true)"
 if ! grep -qE '(^| )AndroidManifest\.xml$' <<<"$ZIP_LISTING"; then
     MEMBERS="$(sed -n 's/^ *[0-9][0-9]*  *[^ ]*  *[^ ]*  *\(.*\.apk\)$/\1/p' <<<"$ZIP_LISTING")"
@@ -196,6 +197,26 @@ pkg_field() {
         | grep -o "$1='[^']*'" \
         | head -1 \
         | sed "s/^$1='//; s/'\$//"
+}
+
+extract_icon() {
+    # aapt2 lists one icon per density, as `application-icon-<dpi>:'res/....png'`. Take the
+    # highest density that is a real bitmap.
+    #
+    # Adaptive icons are declared as .xml, which is a compiled binary resource referencing layers
+    # we cannot flatten without rendering them. There is no point shipping that to the client, so
+    # an app whose only icon is adaptive simply has no iconUrl and draws a letter tile. A missing
+    # icon is a cosmetic loss; a corrupt one looks like a broken app.
+    local best=""
+    while IFS= read -r line; do
+        local path="${line#*:}"
+        path="${path//\'/}"
+        case "$path" in *.png) best="$path" ;; esac
+    done < <(grep -o "^application-icon-[0-9]*:'[^']*'" <<<"$BADGING" | sort -t- -k3 -n)
+    [[ -n "$best" ]] || return 1
+    unzip -p "$APK" "$best" > "$1" 2>/dev/null || return 1
+    [[ -s "$1" ]] || return 1
+    return 0
 }
 
 PACKAGE="$(pkg_field name)"
@@ -319,6 +340,21 @@ signing certificate of the asset attached here; a console verifies both before i
             r2_put "$f" "$skey" "$R2_APK_TYPE" "$R2_APK_CACHE"
             SPLIT_META+=("$sname|$(r2_public_url "$skey")|$(sha256_of "$f")|$(wc -c <"$f" | tr -d " ")")
         done
+
+        # The app icon, so the store can show a picture for something not installed yet. Cosmetic,
+        # so a failure here warns and moves on rather than aborting a publish that is otherwise
+        # sound.
+        if extract_icon "$STAGE/icon.png"; then
+            ikey="icons/$PACKAGE-$VERSION_CODE.png"
+            echo "uploading icon to r2://$R2_BUCKET/$ikey" >&2
+            if r2_put "$STAGE/icon.png" "$ikey" "image/png" "$R2_APK_CACHE"; then
+                ICON_URL="$(r2_public_url "$ikey")"
+            else
+                echo "note: icon upload failed - entry will fall back to a letter tile." >&2
+            fi
+        else
+            echo "note: no bitmap icon in this APK - entry will fall back to a letter tile." >&2
+        fi
         ;;
     url)
         URL="$URL_OVERRIDE"
@@ -381,6 +417,10 @@ if splits:
 notes = "$NOTES"
 if notes:
     entry["releaseNotesUrl"] = notes
+
+icon = "$ICON_URL"
+if icon:
+    entry["iconUrl"] = icon
 
 # One entry per package: the client rejects a catalog with duplicates outright, because it is
 # ambiguous about what would actually be installed.

@@ -1,22 +1,22 @@
 {
   "schema": 1,
-  "generated": "2026-08-14T19:12:36Z",
+  "generated": "2026-08-14T20:13:45Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 3,
-      "versionName": "1.0.2",
+      "versionCode": 4,
+      "versionName": "1.0.3",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-3/io.stride.spikes-3.apk",
-      "sizeBytes": 52759620,
-      "sha256": "8beba219f281a04e6e329108b2578bb690f08420ccb622c464fc0b336434d229",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-4/io.stride.spikes-4.apk",
+      "sizeBytes": 51856763,
+      "sha256": "9fc1c8011a3c0c2603fc5cfdbcd100099069f7342dee193080001e44faf8a5c6",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59"
     },
     {
