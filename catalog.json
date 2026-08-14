@@ -1,24 +1,23 @@
 {
   "schema": 1,
-  "generated": "2026-08-14T22:11:28Z",
+  "generated": "2026-08-14T23:05:34Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 7,
-      "versionName": "1.0.6",
+      "versionCode": 8,
+      "versionName": "1.0.7",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-7/io.stride.spikes-7.apk",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-8/io.stride.spikes-8.apk",
       "sizeBytes": 52037271,
-      "sha256": "93f533b84d514f628a82f63e5f5d5ecc4e950708b1c946422ba02d2241841c53",
-      "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59",
-      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases"
+      "sha256": "1851206d1ee96193d58f634386cecb0f9ea9a76827b974ce764300b52cf699ad",
+      "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59"
     },
     {
       "package": "com.amazon.avod.thirdpartyclient",
