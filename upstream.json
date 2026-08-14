@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "sources": [
+    {
+      "package": "org.jellyfin.mobile",
+      "name": "Jellyfin",
+      "repo": "jellyfin/jellyfin-android",
+      "asset": "^jellyfin-android-v[0-9][0-9A-Za-z.+-]*-libre-release\\.apk$",
+      "signerSha256": "d881796ed2a67ff6ef9f676828723c6b1fa18e09388962cba4abc4a594a69131",
+      "requiresGms": false,
+      "why": "The libre flavour, not proprietary: the proprietary build carries Google Cast, which needs Play Services the console does not have. Release assets on jellyfin-android are stable per-tag URLs, so the catalog can point straight at them."
+    }
+  ]
+}

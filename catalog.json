@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-08-14T21:08:59Z",
+  "generated": "2026-08-14T21:31:03Z",
   "apps": [
     {
       "package": "io.stride.spikes",
@@ -284,6 +284,25 @@
       "sizeBytes": 145376763,
       "sha256": "a347eac03923a63793bcfe0e179ab0a021490ac54fa541846ad0bdd10e0b4ae3",
       "signerSha256": "6505b181933344f93893d586e399b94616183f04349cb572a9e81a3335e28ffd"
+    },
+    {
+      "package": "org.jellyfin.mobile",
+      "role": "app",
+      "name": "Jellyfin",
+      "versionCode": 2070199,
+      "versionName": "2.7.1",
+      "minSdk": 21,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://github.com/jellyfin/jellyfin-android/releases/download/v2.7.1/jellyfin-android-v2.7.1-libre-release.apk",
+      "sizeBytes": 8962431,
+      "sha256": "777d49ecf08ef81dfad4ae7e3c1aabefc8245787a25241c3a37a42e4a151e23a",
+      "signerSha256": "d881796ed2a67ff6ef9f676828723c6b1fa18e09388962cba4abc4a594a69131",
+      "releaseNotesUrl": "https://github.com/jellyfin/jellyfin-android/releases/tag/v2.7.1"
     },
     {
       "package": "tv.pluto.android",

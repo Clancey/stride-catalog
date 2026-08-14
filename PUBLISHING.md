@@ -50,12 +50,14 @@ as unavailable with the reason spelled out, instead of installing something that
 
 ## Where the bytes live
 
-Two stores, chosen by `role`, because the two kinds of artifact have different lifecycles:
+Two stores, chosen by `role`, because the two kinds of artifact have different lifecycles — plus the
+case where the bytes are already served somewhere stable and neither store is needed:
 
 | `role` | Hosted on | Why |
 |---|---|---|
 | `stride` | **GitHub Releases on this repo** | Our own build. It wants to sit next to a tag and release notes, and it costs nothing to serve. It goes on *this* public repo rather than `Clancey/stride` because that repo is private, and release assets on a private repo need an auth header a treadmill will never have. |
 | `app` | **Cloudflare R2** | Someone else's build. It does not belong in our git history, has no tag of ours to hang off, and is the one that will actually be large. |
+| `app`, `--url` | **wherever upstream already put it** | Someone else's build that they publish themselves at a stable URL. Copying it into our bucket would add a second thing to keep current for no gain — and a vendor who re-signs or moves a build then simply causes a verification failure, which is the intended outcome. See [Apps that update themselves](#apps-that-update-themselves). |
 
 `catalog.json` itself stays in git regardless. That is the point of the split: the bytes want a CDN,
 but the *decision* about what a console will install wants a reviewable commit and a revert button.
@@ -181,6 +183,58 @@ The console picks it up on its next check. Nothing else has to happen.
 
 Requirements: `apksigner` and `aapt2` from the Android SDK build-tools, `python3`, `curl`, plus
 `gh` for Stride releases and `wrangler` (or `npx`) for R2.
+
+---
+
+## Apps that update themselves
+
+Some projects publish their own APK on a GitHub Release, at a URL that is stable for the life of the
+tag. For those there is nothing to host: the catalog records the upstream URL and its digests, and
+the only recurring work is noticing that a new release exists. `upstream.json` declares which apps
+those are, and `tools/sync-upstream.sh` does the noticing — on a daily schedule, in the
+[Sync upstream releases](.github/workflows/upstream-sync.yml) workflow.
+
+```jsonc
+{
+  "schema": 1,
+  "sources": [
+    {
+      "package": "org.jellyfin.mobile",
+      "name": "Jellyfin",
+      "repo": "jellyfin/jellyfin-android",
+      "asset": "^jellyfin-android-v[0-9][0-9A-Za-z.+-]*-libre-release\\.apk$",
+      "signerSha256": "d881796…",   // pinned; a differently-signed release is refused
+      "requiresGms": false
+    }
+  ]
+}
+```
+
+A run reads `/releases/latest` — which excludes prereleases, so a beta tag is never handed to a
+treadmill — picks the single asset matching `asset`, downloads it, and refuses to go further unless
+the archive **is** the declared package and **is** signed by the pinned certificate. Only then does
+it hand the file to `tools/publish.sh --url`, which records the upstream URL along with the size and
+digests it read from the bytes it just fetched.
+
+The pin is the point. Automation that follows whatever the latest tag contains is a supply chain
+with no gate in it, and the console's signer check would be checking our automation against itself.
+A key rotation upstream therefore stops the sync with the observed digest printed, and resuming is a
+human editing `upstream.json` in a reviewable commit — which is the weight that decision deserves.
+Android would refuse the update anyway; this just means finding out in CI rather than on a console.
+
+The workflow re-fetches only the entries it changed, from the public internet with no credentials,
+before committing. A `versionCode` that is not strictly greater is a no-op, so a run that finds
+nothing new writes nothing at all.
+
+To add an app: append a source, run it once locally, and commit both files.
+
+```bash
+tools/sync-upstream.sh                       # every source
+tools/sync-upstream.sh org.jellyfin.mobile   # just one
+```
+
+Only for upstreams that ship a **plain, universal APK**. An `.aab`, or a per-ABI split set, needs a
+publishing decision this cannot make on its own — use `tools/publish.sh` by hand.
 
 ---
 
