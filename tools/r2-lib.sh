@@ -128,3 +128,111 @@ readonly R2_APK_TYPE="application/vnd.android.package-archive"
 # the key: it would make the layout unreadable, and the immutability guard above plus the catalog's
 # sha256 already cover what a content-addressed key would buy.
 r2_apk_key() { printf 'apks/%s/%s-%s.apk' "$1" "$1" "$2"; }
+
+extract_icon() {
+    # Produce a PNG for the store to show next to an app that is not installed yet.
+    #
+    # aapt2 lists one icon per density as `application-icon-<dpi>:'res/...'`. The obvious approach -
+    # take the highest-density entry that ends in .png - silently yields *nothing* for essentially
+    # every modern app, because they all ship an adaptive icon and the path is a compiled binary
+    # `.xml`. That is how the catalog ended up with sixteen apps and zero icons: the fallback was
+    # working exactly as written, and what it fell back to was a letter tile every time.
+    #
+    # So handle both. A raster icon is used as-is; an adaptive one is flattened here by resolving
+    # its <background> and <foreground> layers back to raster resources and compositing them the
+    # way the launcher would, including the 108dp -> 72dp safe-zone crop. A vector layer is still
+    # out of reach without a renderer, and still falls back to a letter tile.
+    local out="$1"
+    local best=""
+    while IFS= read -r line; do
+        local path="${line#*:}"
+        path="${path//\'/}"
+        case "$path" in *.png|*.webp) best="$path" ;; esac
+    done < <(grep -o "^application-icon-[0-9]*:'[^']*'" <<<"$BADGING" | sort -t- -k3 -n)
+
+    if [[ -n "$best" ]]; then
+        unzip -p "$APK" "$best" > "$out" 2>/dev/null || return 1
+        [[ -s "$out" ]] || return 1
+        return 0
+    fi
+
+    # No raster at any density: this is an adaptive icon. Find its xml and flatten it.
+    local xml
+    xml="$(grep -o "^application-icon-[0-9]*:'[^']*\.xml'" <<<"$BADGING" | tail -1 || true)"
+    xml="${xml#*:}"
+    xml="${xml//\'/}"
+    [[ -n "$xml" ]] || return 1
+
+    local tree
+    tree="$(aapt2 dump xmltree --file "$xml" "$APK" 2>/dev/null)" || return 1
+
+    # Layer ids in declaration order: <background> then <foreground>.
+    local ids
+    ids="$(grep -oE 'android:drawable\(0x[0-9a-f]+\)=@0x[0-9a-f]+' <<<"$tree" | sed 's/.*=@//')"
+    local bg_id fg_id
+    bg_id="$(sed -n 1p <<<"$ids")"
+    fg_id="$(sed -n 2p <<<"$ids")"
+    [[ -n "$fg_id" ]] || return 1
+
+    local res
+    res="$(aapt2 dump resources "$APK" 2>/dev/null)" || return 1
+
+    # Highest-density raster for one resource id. Densities are listed low to high, so take the last.
+    layer_path() {
+        [[ -n "$1" ]] || return 1
+        awk -v id="$1" '
+            $0 ~ ("^ *resource " id " ") { grab = 1; next }
+            grab && /^ *resource /       { exit }
+            grab && /\(file\) res\// {
+                for (i = 1; i <= NF; i++) if ($i ~ /^res\//) last = $i
+            }
+            END { if (last != "") print last }
+        ' <<<"$res"
+    }
+
+    local fg bg
+    fg="$(layer_path "$fg_id")"
+    bg="$(layer_path "$bg_id")"
+    # A vector foreground has no (file) res/ raster; there is nothing to composite.
+    [[ -n "$fg" ]] || return 1
+    case "$fg" in *.xml) return 1 ;; esac
+
+    local dir
+    dir="$(dirname "$out")"
+    unzip -p "$APK" "$fg" > "$dir/fg.bin" 2>/dev/null || return 1
+    if [[ -n "$bg" && "$bg" != *.xml ]]; then
+        unzip -p "$APK" "$bg" > "$dir/bg.bin" 2>/dev/null || true
+    fi
+
+    ICON_FG="$dir/fg.bin" ICON_BG="$dir/bg.bin" ICON_OUT="$out" python3 - <<'PYICON' || return 1
+import os, sys
+try:
+    from PIL import Image
+except ImportError:
+    sys.exit(1)
+
+fg_path, bg_path, out = os.environ["ICON_FG"], os.environ["ICON_BG"], os.environ["ICON_OUT"]
+fg = Image.open(fg_path).convert("RGBA")
+size = fg.size
+
+base = Image.new("RGBA", size, (255, 255, 255, 0))
+if os.path.exists(bg_path) and os.path.getsize(bg_path) > 0:
+    try:
+        bg = Image.open(bg_path).convert("RGBA").resize(size, Image.LANCZOS)
+        base.alpha_composite(bg)
+    except Exception:
+        pass
+base.alpha_composite(fg)
+
+# An adaptive icon is authored on a 108dp canvas of which only the middle 72dp is guaranteed
+# visible; the launcher crops the rest. Skipping this leaves every icon floating in a wide margin.
+inset = round(size[0] * (108 - 72) / 2 / 108)
+base = base.crop((inset, inset, size[0] - inset, size[1] - inset))
+base.thumbnail((192, 192), Image.LANCZOS)
+base.save(out, "PNG", optimize=True)
+PYICON
+
+    rm -f "$dir/fg.bin" "$dir/bg.bin"
+    [[ -s "$out" ]] || return 1
+    return 0
+}

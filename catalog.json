@@ -68,7 +68,8 @@
       "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.android.vending/com.android.vending-85262620.apk",
       "sizeBytes": 105597855,
       "sha256": "e93ab72a661ecad03338c2a97bbbd7426f486cb11938c34915a600fa32efb666",
-      "signerSha256": "f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83"
+      "signerSha256": "f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83",
+      "iconUrl": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/icons/com.android.vending-85262620.png"
     },
     {
       "package": "com.apple.android.music",
@@ -97,7 +98,8 @@
           "sha256": "4041450f8e1bd24685b41ce9b6aa9958353da6ac62ac66a65bfe6eadefef7b69",
           "sizeBytes": 378150
         }
-      ]
+      ],
+      "iconUrl": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/icons/com.apple.android.music-1586.png"
     },
     {
       "package": "com.audible.application",
@@ -115,7 +117,8 @@
       "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.audible.application/com.audible.application-2090263203.apk",
       "sizeBytes": 160831475,
       "sha256": "202df5321122d7cb68c20a478c1b4f81867c82cdb0e794a4cb73b6a222b152db",
-      "signerSha256": "57901d5c9f6744f28636f98f68ae5a3248571c0ef610470c09b08b34b6b3a80f"
+      "signerSha256": "57901d5c9f6744f28636f98f68ae5a3248571c0ef610470c09b08b34b6b3a80f",
+      "iconUrl": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/icons/com.audible.application-2090263203.png"
     },
     {
       "package": "com.clearchannel.iheartradio.controller",
@@ -149,7 +152,6 @@
       "sizeBytes": 24309735,
       "sha256": "fb2fc6e56bee07c5129717d99dcaa7b3765332c67c0659ebc32da5ce46b7489e",
       "signerSha256": "b4d251e979ea974d8f070feb5ab69fc4c2873f4e8add421ff63ad5f2789d63d4",
-      "requiresGms": true,
       "splits": [
         {
           "name": "config.arm64_v8a",
@@ -163,7 +165,8 @@
           "sha256": "1e022c27966757d9afc990803eb46ea19e97fe6baec041ce8542f49552fa8885",
           "sizeBytes": 343215
         }
-      ]
+      ],
+      "iconUrl": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/icons/com.disney.disneyplus-1785372530.png"
     },
     {
       "package": "com.google.android.apps.youtube.music",
@@ -179,7 +182,8 @@
       "sizeBytes": 70915435,
       "sha256": "5fc19454a9bb921d9eba001788551d46898d1c1fe189b20ac9ed12aae2092574",
       "signerSha256": "6a2f65ec694a6a632acdcb5080912a565f903d4b8d83f0eb8e44fbdf2660d8e1",
-      "requiresGms": true
+      "requiresGms": true,
+      "iconUrl": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/icons/com.google.android.apps.youtube.music-93251240.png"
     },
     {
       "package": "com.google.android.gms",
@@ -247,7 +251,8 @@
       "sizeBytes": 202723130,
       "sha256": "40014352e831fc5e09c77ecc82b459572964175a03981e04212eed249f3ba81b",
       "signerSha256": "5aad2bee6db95d17e05a08d7d1e64c10a1511879154483916b6ae6c7fd9cb0c6",
-      "requiresGms": true
+      "requiresGms": true,
+      "iconUrl": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/icons/com.google.android.youtube-1561190505.png"
     },
     {
       "package": "com.netflix.mediaclient",

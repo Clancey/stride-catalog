@@ -228,25 +228,6 @@ pkg_field() {
         | sed "s/^$1='//; s/'\$//"
 }
 
-extract_icon() {
-    # aapt2 lists one icon per density, as `application-icon-<dpi>:'res/....png'`. Take the
-    # highest density that is a real bitmap.
-    #
-    # Adaptive icons are declared as .xml, which is a compiled binary resource referencing layers
-    # we cannot flatten without rendering them. There is no point shipping that to the client, so
-    # an app whose only icon is adaptive simply has no iconUrl and draws a letter tile. A missing
-    # icon is a cosmetic loss; a corrupt one looks like a broken app.
-    local best=""
-    while IFS= read -r line; do
-        local path="${line#*:}"
-        path="${path//\'/}"
-        case "$path" in *.png) best="$path" ;; esac
-    done < <(grep -o "^application-icon-[0-9]*:'[^']*'" <<<"$BADGING" | sort -t- -k3 -n)
-    [[ -n "$best" ]] || return 1
-    unzip -p "$APK" "$best" > "$1" 2>/dev/null || return 1
-    [[ -s "$1" ]] || return 1
-    return 0
-}
 
 PACKAGE="$(pkg_field name)"
 VERSION_CODE="$(pkg_field versionCode)"
