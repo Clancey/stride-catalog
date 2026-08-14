@@ -18,7 +18,7 @@
       "sizeBytes": 52037271,
       "sha256": "93f533b84d514f628a82f63e5f5d5ecc4e950708b1c946422ba02d2241841c53",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59",
-      "releaseNotesUrl": "https://github.com/Clancey/stride/releases"
+      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases"
     },
     {
       "package": "com.amazon.avod.thirdpartyclient",

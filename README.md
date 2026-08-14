@@ -1,7 +1,7 @@
 # Stride
 
 A launcher and workout overlay that replaces the stock software on an iFit treadmill console.
-This repo is the update catalog it reads: **[Stride's source lives here](https://github.com/Clancey/stride)**.
+This repo is what a console talks to: the update catalog, the installer, and the recovery runbook.
 
 <p align="center">
   <a href="https://www.buymeacoffee.com/clancey"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-clancey-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee"></a>
@@ -75,8 +75,9 @@ Keep adb connected the first time. If anything goes wrong, put the console's own
 adb shell cmd package set-home-activity com.ifit.standalone/.MainActivity
 ```
 
-Before doing this on a machine you rely on, read
-[`docs/RUNBOOK.md`](https://github.com/Clancey/stride/blob/main/docs/RUNBOOK.md).
+Before doing this on a machine you rely on, read [**the runbook**](docs/RUNBOOK.md) — how to get an
+unbootable console back, how to kill a runaway overlay, and what to do if the belt is moving and you
+cannot stop it.
 
 ## Safety
 
