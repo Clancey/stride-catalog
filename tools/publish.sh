@@ -333,6 +333,12 @@ signing certificate of the asset attached here; a console verifies both before i
             echo "if this build differs from the published one, bump versionCode." >&2
         fi
         URL="https://github.com/$RELEASE_REPO/releases/download/$TAG/$ARTIFACT"
+
+        # Default the notes link to the release we just used. Forgetting --notes silently ships an
+        # entry with no releaseNotesUrl, and a console then offers an update with nothing to read
+        # about it - which is exactly what happened to versionCode 8. This tag is a real public
+        # page describing the exact bytes being installed, so it is the honest default.
+        NOTES="${NOTES:-https://github.com/$RELEASE_REPO/releases/tag/$TAG}"
         ;;
     r2)
         r2_require_env || exit 1
