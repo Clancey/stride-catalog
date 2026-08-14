@@ -178,11 +178,12 @@ Requirements: `apksigner` and `aapt2` from the Android SDK build-tools, plus `py
 
 ## Pointing a console at a different catalog
 
-Useful for testing a build without publishing it to everyone:
+Useful for testing a build without publishing it to everyone. Open the **Updates** sheet on the
+console and change the catalog URL there; it is stored in Stride's app-private preferences.
 
-```bash
-adb shell am broadcast -a io.stride.spikes.APPSTORE_CHECK   # force a check
-```
+It must be `https` — a cleartext override is rejected rather than stored, because the digest checks
+are what make an unsigned transport survivable and there is no reason to weaken both at once.
 
-The catalog URL is stored in Stride's app-private preferences and can be changed from the Updates
-sheet. It must be `https`; a cleartext override is rejected rather than stored.
+**Check now** in the same sheet forces an immediate check. The service's components are not
+exported, so there is deliberately no `adb`-reachable trigger: anything on the console that could
+make Stride install an APK on demand would be a hole, not a feature.
