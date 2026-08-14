@@ -1,2 +1,12 @@
 .DS_Store
 *.apk.idsig
+
+# Cloudflare credentials. tools/r2.env.example is the committed template.
+tools/r2.env
+
+# Artifacts are served from GitHub Releases (Stride) or R2 (third-party), never
+# from the repo itself. Anything landing here is a local staging accident.
+apks/*.apk
+
+# wrangler local state
+.wrangler/

@@ -1,5 +1,128 @@
 {
   "schema": 1,
-  "generated": "2026-08-14T00:00:00Z",
-  "apps": []
+  "generated": "2026-08-14T18:49:31Z",
+  "apps": [
+    {
+      "package": "io.stride.spikes",
+      "role": "stride",
+      "name": "Stride",
+      "versionCode": 1,
+      "versionName": "1.0.0",
+      "minSdk": 26,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-1/io.stride.spikes-1.apk",
+      "sizeBytes": 52710468,
+      "sha256": "13ed89a809623abe02fae8f2e11963ea28bd422f16dabd5bf16c54c5cd5441d4",
+      "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59"
+    },
+    {
+      "package": "com.amazon.avod.thirdpartyclient",
+      "role": "app",
+      "name": "Amazon Prime Video",
+      "versionCode": 467189047,
+      "versionName": "3.0.467.189047",
+      "minSdk": 28,
+      "abis": [
+        "arm64-v8a"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.amazon.avod.thirdpartyclient/com.amazon.avod.thirdpartyclient-467189047.apk",
+      "sizeBytes": 194830531,
+      "sha256": "2872499dcb286654b106bb540bdf1fdc510506877cda8b3a5dad8837b85472eb",
+      "signerSha256": "2f19adeb284eb36f7f07786152b9a1d14b21653203ad0b04ebbf9c73ab6d7625"
+    },
+    {
+      "package": "com.amazon.mp3",
+      "role": "app",
+      "name": "Amazon Music",
+      "versionCode": 725200010,
+      "versionName": "25.20.0",
+      "minSdk": 28,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.amazon.mp3/com.amazon.mp3-725200010.apk",
+      "sizeBytes": 196061285,
+      "sha256": "85ab0a9e07b9c3afb201376521afcc7744c0d750ec8cf1f61dfdfaf447765ace",
+      "signerSha256": "2f19adeb284eb36f7f07786152b9a1d14b21653203ad0b04ebbf9c73ab6d7625"
+    },
+    {
+      "package": "com.audible.application",
+      "role": "app",
+      "name": "Audible",
+      "versionCode": 2090263203,
+      "versionName": "26.32.03",
+      "minSdk": 28,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.audible.application/com.audible.application-2090263203.apk",
+      "sizeBytes": 160831475,
+      "sha256": "202df5321122d7cb68c20a478c1b4f81867c82cdb0e794a4cb73b6a222b152db",
+      "signerSha256": "57901d5c9f6744f28636f98f68ae5a3248571c0ef610470c09b08b34b6b3a80f"
+    },
+    {
+      "package": "com.clearchannel.iheartradio.controller",
+      "role": "app",
+      "name": "iHeartRadio",
+      "versionCode": 710660004,
+      "versionName": "10.66.0",
+      "minSdk": 24,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.clearchannel.iheartradio.controller/com.clearchannel.iheartradio.controller-710660004.apk",
+      "sizeBytes": 105458566,
+      "sha256": "5acab13eb4082bdb8155d7882bfe0bfb659d0014694d326ee4d1b5de65c74fb0",
+      "signerSha256": "ba46bd0f3f5842ee696b571f89f858c07c4b76d6de140667261ab6f5c35f1476"
+    },
+    {
+      "package": "com.netflix.mediaclient",
+      "role": "app",
+      "name": "Netflix",
+      "versionCode": 64377,
+      "versionName": "9.72.0 build 3 64377",
+      "minSdk": 28,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.netflix.mediaclient/com.netflix.mediaclient-64377.apk",
+      "sizeBytes": 226187023,
+      "sha256": "b49286092c9e269ba90943d8e054ca272ade0378058a18e6a48b3f87bd7d9994",
+      "signerSha256": "86e17577ebe94bd64ff61590651863fb5a2d125f405fcbbf76ba0fe483a31d91"
+    },
+    {
+      "package": "com.spotify.music",
+      "role": "app",
+      "name": "Spotify",
+      "versionCode": 144716725,
+      "versionName": "9.1.72.1891",
+      "minSdk": 24,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.spotify.music/com.spotify.music-144716725.apk",
+      "sizeBytes": 145376763,
+      "sha256": "a347eac03923a63793bcfe0e179ab0a021490ac54fa541846ad0bdd10e0b4ae3",
+      "signerSha256": "6505b181933344f93893d586e399b94616183f04349cb572a9e81a3335e28ffd"
+    }
+  ]
 }

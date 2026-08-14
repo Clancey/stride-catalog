@@ -1,9 +1,18 @@
 # apks/
 
-Published artifacts, referenced by `../catalog.json`.
+**Nothing is served from this directory.** It is kept only as a staging area, and `*.apk` here is
+gitignored.
 
-Named `<package>-<versionCode>.apk` so two versions of one package can never alias, and so a stale
-`catalog.json` cannot silently point at a file that has been overwritten with different bytes.
+Artifacts live in one of two places, chosen by the entry's `role`:
 
-Only commit an APK here if you have the right to redistribute it. For third-party apps, point the
-catalog entry's `url` at the vendor's own download instead and record its digests.
+| `role` | Hosted on |
+|---|---|
+| `stride` | GitHub Releases on this repo |
+| `app` | Cloudflare R2 |
+
+See "Where the bytes live" in the top-level [README](../README.md). `tools/publish.sh` picks the
+right one automatically.
+
+The repo used to host APKs directly from here. That was dropped because GitHub caps files at 100 MB,
+serves them without useful cache headers, and — for third-party APKs especially — permanently bloats
+every future clone with binaries that have nothing to do with the catalog's history.
