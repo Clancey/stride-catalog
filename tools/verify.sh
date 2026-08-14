@@ -164,6 +164,48 @@ while IFS=$'\t' read -r package version_code label url want_size want_sha; do
     echo "  ok $got_size bytes, sha256 matches"
 done <<<"$ENTRIES"
 
+# ------------------------------------------------------------------ bundles
+#
+# A bundle naming a package the catalog does not carry is rejected by the client *wholesale* - it
+# does not skip the bundle, it refuses the whole document, and every fielded console stops seeing
+# updates. That failure is invisible from here unless it is checked, so it is checked.
+BUNDLES="$(python3 - "$CATALOG" <<'BUNDLEPY'
+import json, sys
+catalog = json.load(open(sys.argv[1]))
+known = {a["package"] for a in catalog.get("apps", [])}
+seen_ids, seen_pkgs = set(), set()
+for b in catalog.get("bundles", []):
+    problems = []
+    bid = b.get("id", "")
+    if not bid:
+        problems.append("FAIL a bundle has no id")
+    if bid in seen_ids:
+        problems.append("FAIL two bundles share the id %s" % bid)
+    seen_ids.add(bid)
+    packages = b.get("packages", [])
+    if not packages:
+        problems.append("FAIL bundle %s lists no packages" % bid)
+    for name in packages:
+        if name not in known:
+            problems.append("FAIL bundle %s names %s, which the catalog has no entry for" % (bid, name))
+        if name in seen_pkgs:
+            problems.append("FAIL %s appears in more than one bundle" % name)
+        seen_pkgs.add(name)
+    if problems:
+        for p in problems:
+            print(p)
+    else:
+        print("ok bundle %s: %d packages, all resolved" % (bid, len(packages)))
+BUNDLEPY
+)"
+if [[ -n "$BUNDLES" ]]; then
+    echo
+    while IFS= read -r line; do
+        echo "  $line"
+        [[ "$line" == FAIL* ]] && FAILED=1
+    done <<<"$BUNDLES"
+fi
+
 echo
 if [[ $FAILED -eq 0 ]]; then
     echo "every entry resolves and matches."

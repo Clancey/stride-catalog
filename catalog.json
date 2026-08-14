@@ -1,22 +1,22 @@
 {
   "schema": 1,
-  "generated": "2026-08-14T20:25:36Z",
+  "generated": "2026-08-14T21:08:59Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 5,
-      "versionName": "1.0.4",
+      "versionCode": 6,
+      "versionName": "1.0.5",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-5/io.stride.spikes-5.apk",
-      "sizeBytes": 51856835,
-      "sha256": "453966b9566d8dd7144609a318e1d5e833575df2bb341782ef5b916213f36daa",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-6/io.stride.spikes-6.apk",
+      "sizeBytes": 51856911,
+      "sha256": "a68bca5fba8ceb13676a1b115ab4e32347954c5f4fdf6f2abf9f66765e1c652b",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59"
     },
     {
@@ -53,6 +53,53 @@
       "signerSha256": "2f19adeb284eb36f7f07786152b9a1d14b21653203ad0b04ebbf9c73ab6d7625"
     },
     {
+      "package": "com.android.vending",
+      "role": "app",
+      "name": "Google Play Store",
+      "versionCode": 85262620,
+      "versionName": "52.6.26-29 [0] [PR] 959312099",
+      "minSdk": 29,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.android.vending/com.android.vending-85262620.apk",
+      "sizeBytes": 105597855,
+      "sha256": "e93ab72a661ecad03338c2a97bbbd7426f486cb11938c34915a600fa32efb666",
+      "signerSha256": "f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83"
+    },
+    {
+      "package": "com.apple.android.music",
+      "role": "app",
+      "name": "Apple Music",
+      "versionCode": 1586,
+      "versionName": "6.5.2",
+      "minSdk": 30,
+      "abis": [
+        "arm64-v8a"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.apple.android.music/com.apple.android.music-1586.apk",
+      "sizeBytes": 60098356,
+      "sha256": "1e7151d02cac39a9f70d017bcc26e3b0fd4c2afb3aa30c363206d8616a4fec59",
+      "signerSha256": "771d8674d3d9837c9edf11b11873443998f19105abcecab425ed9b8e6fefff9b",
+      "splits": [
+        {
+          "name": "config.arm64_v8a",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.apple.android.music/com.apple.android.music-1586-config.arm64_v8a.apk",
+          "sha256": "fdc67e398be3d576770f3b9564576f66b658ea19499c3b6ddd7871144ee4b819",
+          "sizeBytes": 39045307
+        },
+        {
+          "name": "config.mdpi",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.apple.android.music/com.apple.android.music-1586-config.mdpi.apk",
+          "sha256": "4041450f8e1bd24685b41ce9b6aa9958353da6ac62ac66a65bfe6eadefef7b69",
+          "sizeBytes": 378150
+        }
+      ]
+    },
+    {
       "package": "com.audible.application",
       "role": "app",
       "name": "Audible",
@@ -87,6 +134,120 @@
       "sizeBytes": 105458566,
       "sha256": "5acab13eb4082bdb8155d7882bfe0bfb659d0014694d326ee4d1b5de65c74fb0",
       "signerSha256": "ba46bd0f3f5842ee696b571f89f858c07c4b76d6de140667261ab6f5c35f1476"
+    },
+    {
+      "package": "com.disney.disneyplus",
+      "role": "app",
+      "name": "Disney+",
+      "versionCode": 1785372530,
+      "versionName": "26.13.0+rc6-2026.07.30",
+      "minSdk": 23,
+      "abis": [
+        "arm64-v8a"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.disney.disneyplus/com.disney.disneyplus-1785372530.apk",
+      "sizeBytes": 24309735,
+      "sha256": "fb2fc6e56bee07c5129717d99dcaa7b3765332c67c0659ebc32da5ce46b7489e",
+      "signerSha256": "b4d251e979ea974d8f070feb5ab69fc4c2873f4e8add421ff63ad5f2789d63d4",
+      "requiresGms": true,
+      "splits": [
+        {
+          "name": "config.arm64_v8a",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.disney.disneyplus/com.disney.disneyplus-1785372530-config.arm64_v8a.apk",
+          "sha256": "247036578b39393b7682e81d5329297a8b45d255ed84dea2d52c03fccb897a93",
+          "sizeBytes": 21586841
+        },
+        {
+          "name": "config.mdpi",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.disney.disneyplus/com.disney.disneyplus-1785372530-config.mdpi.apk",
+          "sha256": "1e022c27966757d9afc990803eb46ea19e97fe6baec041ce8542f49552fa8885",
+          "sizeBytes": 343215
+        }
+      ]
+    },
+    {
+      "package": "com.google.android.apps.youtube.music",
+      "role": "app",
+      "name": "YouTube Music",
+      "versionCode": 93251240,
+      "versionName": "9.32.51",
+      "minSdk": 26,
+      "abis": [
+        "arm64-v8a"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.google.android.apps.youtube.music/com.google.android.apps.youtube.music-93251240.apk",
+      "sizeBytes": 70915435,
+      "sha256": "5fc19454a9bb921d9eba001788551d46898d1c1fe189b20ac9ed12aae2092574",
+      "signerSha256": "6a2f65ec694a6a632acdcb5080912a565f903d4b8d83f0eb8e44fbdf2660d8e1",
+      "requiresGms": true
+    },
+    {
+      "package": "com.google.android.gms",
+      "role": "app",
+      "name": "Google Play Services",
+      "versionCode": 263131013,
+      "versionName": "26.31.31 (100400-959389638)",
+      "minSdk": 28,
+      "abis": [
+        "arm64-v8a"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.google.android.gms/com.google.android.gms-263131013.apk",
+      "sizeBytes": 192722947,
+      "sha256": "60577124e26aec02f60e3c1c5d63b34e8a25f0528521eb6f3b84de0671a854cb",
+      "signerSha256": "f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83",
+      "splits": [
+        {
+          "name": "config.mdpi",
+          "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.google.android.gms/com.google.android.gms-263131013-config.mdpi.apk",
+          "sha256": "7348d813bf5f9150e66a367354bdcf43e6e2621c405e93029e25f72c5cd1c6c3",
+          "sizeBytes": 1657186
+        }
+      ]
+    },
+    {
+      "package": "com.google.android.gsf",
+      "role": "app",
+      "name": "Google Services Framework",
+      "versionCode": 33,
+      "versionName": "13",
+      "minSdk": 33,
+      "abis": [],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.google.android.gsf/com.google.android.gsf-33.apk",
+      "sizeBytes": 7441762,
+      "sha256": "ae2c795a0f9c87c3c07659dbb8a908312f55842d10b376fe0cd2102640207eeb",
+      "signerSha256": "7ce83c1b71f3d572fed04c8d40c5cb10ff75e6d87d9df6fbd53f0468c2905053"
+    },
+    {
+      "package": "com.google.android.gsf.login",
+      "role": "app",
+      "name": "Google Services Framework Login",
+      "versionCode": 25,
+      "versionName": "7.1.2",
+      "minSdk": 23,
+      "abis": [],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.google.android.gsf.login/com.google.android.gsf.login-25.apk",
+      "sizeBytes": 6552461,
+      "sha256": "3324ee2f67d23848ae3d9086f20ada10f2cb0dbb6d202067b918cc4fb4d167be",
+      "signerSha256": "f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83"
+    },
+    {
+      "package": "com.google.android.youtube",
+      "role": "app",
+      "name": "YouTube",
+      "versionCode": 1561190505,
+      "versionName": "21.32.4",
+      "minSdk": 29,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "url": "https://pub-a51e0e9df58e43e0b88ebe86ab753e18.r2.dev/apks/com.google.android.youtube/com.google.android.youtube-1561190505.apk",
+      "sizeBytes": 202723130,
+      "sha256": "40014352e831fc5e09c77ecc82b459572964175a03981e04212eed249f3ba81b",
+      "signerSha256": "5aad2bee6db95d17e05a08d7d1e64c10a1511879154483916b6ae6c7fd9cb0c6",
+      "requiresGms": true
     },
     {
       "package": "com.netflix.mediaclient",
@@ -157,6 +318,20 @@
           "sha256": "03f0a3ba100a2e1e03106173eb17c8a436a05b584263e9decd3872680ba7e832",
           "sizeBytes": 382270
         }
+      ]
+    }
+  ],
+  "bundles": [
+    {
+      "id": "google-play",
+      "name": "Google Play",
+      "detail": "The Play Store and the three services it needs, installed in order",
+      "restartRequired": true,
+      "packages": [
+        "com.google.android.gsf.login",
+        "com.google.android.gsf",
+        "com.google.android.gms",
+        "com.android.vending"
       ]
     }
   ]

@@ -64,9 +64,13 @@ APK="$1"; shift
 
 ROLE="app"; NAME=""; NOTES=""; URL_OVERRIDE=""; BACKEND=""; REQUIRES_GMS="false"
 # Which config splits to publish from a bundle. These match the consoles we know: arm64, English,
-# xhdpi. Installing more than one ABI in a session is rejected by the platform, so this is a
+# mdpi. Installing more than one ABI in a session is rejected by the platform, so this is a
 # choice that has to be made somewhere - better here, visibly, than silently at install time.
-SPLIT_SELECT="config.arm64_v8a,config.en,config.xhdpi"
+#
+# mdpi, not xhdpi: `adb shell wm density` on the console reports 160, which is mdpi exactly. This
+# defaulted to xhdpi for a while, which is not a hard failure - Android will install a mismatched
+# density split - but it ships assets at four times the pixels the panel has, for nothing.
+SPLIT_SELECT="config.arm64_v8a,config.en,config.mdpi"
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --role)    ROLE="${2:-}"; shift 2 ;;
@@ -168,6 +172,31 @@ if ! grep -qE '(^| )AndroidManifest\.xml$' <<<"$ZIP_LISTING"; then
             fi
         done
     done
+
+    # Density fallback. Not every bundle ships every density: Pluto TV, for instance, has only
+    # xhdpi. Silently publishing no density split at all would leave the app to render from the
+    # base APK's fallback resources, which is a visible downgrade that nothing would report - so
+    # take the nearest available density instead, and say which one.
+    if [[ "$SPLIT_SELECT" == *config.*dpi* ]]; then
+        have_density=""
+        for f in ${SPLIT_FILES[@]+"${SPLIT_FILES[@]}"}; do
+            [[ "$(basename "$f" .apk)" == *dpi ]] && have_density=1
+        done
+        if [[ -z "$have_density" ]]; then
+            # Nearest first, from this console's 160dpi outwards.
+            for want in config.hdpi config.xhdpi config.xxhdpi config.ldpi config.xxxhdpi; do
+                for m in $MEMBERS; do
+                    if [[ "$(basename "$m" .apk)" == "$want" ]]; then
+                        SPLIT_FILES+=("$BUNDLE_DIR/$m")
+                        echo "note: no mdpi split in this bundle - using $want instead." >&2
+                        have_density=1
+                        break
+                    fi
+                done
+                [[ -n "$have_density" ]] && break
+            done
+        fi
+    fi
 
     echo "split bundle: base $(basename "$BASE") + ${#SPLIT_FILES[@]} split(s)" >&2
     for s in "${SPLIT_FILES[@]}"; do echo "  $(basename "$s")" >&2; done
@@ -333,7 +362,10 @@ signing certificate of the asset attached here; a console verifies both before i
 
         # Splits go beside the base under the same package/versionCode prefix, so everything for
         # one install is deleted or audited together.
-        for f in "${SPLIT_FILES[@]}"; do
+        # `${arr[@]}` on an empty array is an unbound-variable error under `set -u` on bash 3.2,
+        # which is what macOS ships - so an app with no splits would abort here, after its bytes
+        # were already uploaded.
+        for f in ${SPLIT_FILES[@]+"${SPLIT_FILES[@]}"}; do
             sname="$(basename "$f" .apk)"
             skey="apks/$PACKAGE/$PACKAGE-$VERSION_CODE-$sname.apk"
             echo "uploading split to r2://$R2_BUCKET/$skey" >&2
@@ -344,10 +376,16 @@ signing certificate of the asset attached here; a console verifies both before i
         # The app icon, so the store can show a picture for something not installed yet. Cosmetic,
         # so a failure here warns and moves on rather than aborting a publish that is otherwise
         # sound.
-        if extract_icon "$STAGE/icon.png"; then
+        #
+        # Its own scratch dir: the release backend above makes one, but that branch never runs for
+        # an R2 publish, and inheriting a variable across a `case` arm that did not execute is how
+        # this aborted after the bytes were already uploaded.
+        ICON_STAGE="$(mktemp -d)"
+        trap 'rm -rf "$ICON_STAGE"' EXIT
+        if extract_icon "$ICON_STAGE/icon.png"; then
             ikey="icons/$PACKAGE-$VERSION_CODE.png"
             echo "uploading icon to r2://$R2_BUCKET/$ikey" >&2
-            if r2_put "$STAGE/icon.png" "$ikey" "image/png" "$R2_APK_CACHE"; then
+            if r2_put "$ICON_STAGE/icon.png" "$ikey" "image/png" "$R2_APK_CACHE"; then
                 ICON_URL="$(r2_public_url "$ikey")"
             else
                 echo "note: icon upload failed - entry will fall back to a letter tile." >&2
