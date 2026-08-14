@@ -82,11 +82,11 @@ info "adb: $ADB"
 if [[ -n "$CONNECT" ]]; then
     [[ "$CONNECT" == *:* ]] || CONNECT="$CONNECT:5555"
     say "Connecting to $CONNECT"
-    "$ADB" connect "$CONNECT" >/dev/null 2>&1 || true
+    "$ADB" connect "$CONNECT" >/dev/null 2>&1 </dev/null || true
     sleep 1
 fi
 
-devices="$("$ADB" devices | awk 'NR>1 && $2=="device" {print $1}')"
+devices="$("$ADB" devices </dev/null | awk 'NR>1 && $2=="device" {print $1}')"
 count="$(printf '%s\n' "$devices" | grep -c . || true)"
 
 if [[ -z "$DEVICE" ]]; then
@@ -104,7 +104,11 @@ To find it: on the console, enable Developer options and 'ADB over network' (or
     esac
 fi
 
-adbs() { "$ADB" -s "$DEVICE" "$@"; }
+# Every adb call gets stdin from /dev/null. This is not cosmetic: `adb shell` inherits and drains
+# stdin, and under the documented `curl ... | bash` install stdin IS the rest of this script.
+# Without this, adb swallows the remaining lines, bash reaches EOF, and the installer exits 0
+# having done nothing at all - the worst possible failure, because it looks like success.
+adbs() { "$ADB" -s "$DEVICE" "$@" </dev/null; }
 
 model="$(adbs shell getprop ro.product.model 2>/dev/null | tr -d '\r')"
 sdk="$(adbs shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r')"
@@ -184,7 +188,25 @@ info "checksum ok"
 # ---------------------------------------------------------------- install
 
 say "Installing"
-adbs install -r "$APK" 2>&1 | tail -2
+# Capture rather than stream: adb's failure output is a single dense line that needs translating
+# into something actionable, and `| tail` here would also discard the exit status.
+if ! out="$(adbs install -r "$APK" 2>&1)"; then
+    if [[ "$out" == *INSTALL_FAILED_UPDATE_INCOMPATIBLE* || "$out" == *signatures*not*match* ]]; then
+        die "a copy of Stride is already installed that was signed with a different key.
+
+Android will not replace an app with a build signed by another key, so this cannot be
+fixed by reinstalling over the top. Remove the old copy first - note that this erases
+Stride's settings and profiles on the console:
+
+  adb -s $DEVICE uninstall $PACKAGE
+
+then run this installer again. (If the console is currently using Stride as its
+launcher, set the stock one back first so you are not left without a home screen:
+  adb -s $DEVICE shell cmd package set-home-activity com.ifit.standalone/.MainActivity)"
+    fi
+    printf '%s\n' "$out" | tail -3 >&2
+    die "install failed."
+fi
 
 adbs shell pm path "$PACKAGE" >/dev/null 2>&1 \
     || die "install did not take - $PACKAGE is not present afterwards."
