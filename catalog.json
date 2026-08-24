@@ -1,25 +1,31 @@
 {
   "schema": 1,
-  "generated": "2026-08-24T22:17:09Z",
+  "generated": "2026-08-24T23:02:59Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 15,
-      "versionName": "1.2.1",
+      "versionCode": 16,
+      "versionName": "1.2.2",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-15/io.stride.spikes-15.apk",
-      "sizeBytes": 52847131,
-      "sha256": "9ac106a393922800a810e59b5d04a0a97e422031ba504080176c745c492c6105",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-16/io.stride.spikes-16.apk",
+      "sizeBytes": 52847127,
+      "sha256": "60c7566b78f983733b54db61eff9375d8822ebb1498df64a6e2d53d6010bbcd3",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59",
-      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-15",
+      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-16",
       "releaseNotes": [
+        {
+          "versionCode": 16,
+          "versionName": "1.2.2",
+          "date": "2026-08-24",
+          "notes": "Direct hardware access can now actually open an X22i's console. This is the fix the last two releases were reaching for and missing.\n\nStride would only talk to a console over a USB pipe of one particular kind. An X22i's controller board presents itself as a HID device, which uses a different kind \u2014 so Stride looked at a board that was plugged in, powered, enumerated and already permitted, decided there was nothing there, and reported \"No direct connection to the treadmill.\" No protocol work could ever have been reached, because the connection was never opened.\n\nDiagnosed on real hardware and fixed by @knaackville, who pulled the console's own USB descriptor to prove it rather than inferring it. Thank you.\n\nStride now says what it found, down to the pipes. Settings reports the console on the port, whether Android has granted access, and the data pipes it offers \u2014 or says plainly that it found none it can use. The whole reason this took three releases is that every one of those situations produced the same sentence.\n\nTapping the connection you are already on now retries it. Previously that tap did nothing, which is exactly the wrong behaviour for a rider whose machine was switched on, plugged in, or granted permission after the last attempt failed \u2014 the one row they would think to press was inert.\n\nStill not confirmed working end to end. Opening the connection is what changed here. Whether the controller then answers Stride's handshake is the next thing to find out, and the settings screen is now detailed enough to say. If it does not connect, that line is what to send.\n\nThe safety key is still the only emergency stop, on every connection. Nothing here changes what protects you.\n\nInstalls as an update over 1.2.1.\n\nTested on a NordicTrack Commercial 1750; the USB fix is verified against a NordicTrack X22i's own hardware descriptor."
+        },
         {
           "versionCode": 15,
           "versionName": "1.2.1",
