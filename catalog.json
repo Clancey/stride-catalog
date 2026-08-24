@@ -1,25 +1,31 @@
 {
   "schema": 1,
-  "generated": "2026-08-24T06:36:15Z",
+  "generated": "2026-08-24T20:37:06Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 13,
-      "versionName": "1.1.0",
+      "versionCode": 14,
+      "versionName": "1.2.0",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-13/io.stride.spikes-13.apk",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-14/io.stride.spikes-14.apk",
       "sizeBytes": 52847131,
-      "sha256": "15acf46105f29d1037be0c4cf43b22bd9a2257bb8268c2541d951866060548c8",
+      "sha256": "5edfc324df9ae8716c6a745efd7d2348f7387d916666739f1c7aa9678137bf83",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59",
-      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-13",
+      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-14",
       "releaseNotes": [
+        {
+          "versionCode": 14,
+          "versionName": "1.2.0",
+          "date": "2026-08-24",
+          "notes": "Stride now works on pre-GlassOS consoles. A NordicTrack X22i and its siblings run an older iFit stack with no GlassOS service on the console at all. Stride assumed GlassOS was always there, so on those machines it connected to nothing, showed Not measured for every metric, and gave no hint that the fix was a setting three screens down. That was a real report from an X22i owner and this release is the answer to it.\n\nStride now works out what your console is. On first run it checks what is actually present \u2014 iFit's GlassOS service, or an iFit console on the USB port \u2014 and picks the connection to match. The settings screen tells you what it found and whether the choice was automatic, and picking one yourself always overrides it and sticks.\n\nIf your machine works today, it keeps working exactly as it does now. The check is deliberately cautious: a console running GlassOS stays on GlassOS, and Stride will not move a working treadmill onto the experimental direct path on its own. Only a console where GlassOS is genuinely absent is sent anywhere else.\n\nMachines were being given too little time to answer. Direct hardware access waited 400 milliseconds for a reply. Measured against iFit's own software that is not a deadline at all \u2014 it is the pause before reading starts, and the real deadline is one to three and a half seconds depending on what was asked. A console replying exactly as designed was being treated as absent. Every command now waits as long as the machine is actually allowed to take.\n\nTwo consoles, told apart properly. Stride now reads the console's USB product id and speaks the generation it reports, rather than assuming. A console being reflashed is recognised and left alone rather than written to.\n\nThe safety key is still the only emergency stop, on every connection. Stride's stop is best-effort and always has been. Everything that protects you \u2014 the speed and incline limits, the ramp limiting, stop preemption \u2014 sits above all the connections in one place, so the connection Stride picks never changes the safety rules.\n\nWhat has not been tested on hardware. The direct path was rebuilt from iFit's own console software rather than from captures of a running machine, and has still not been run against a real treadmill. It stays marked experimental and still warns before you switch to it. If it stops answering, switch back to iFit and speed, incline and fan return.\n\nInstalls as an update over 1.1.0.\n\nTested on a NordicTrack Commercial 1750."
+        },
         {
           "versionCode": 13,
           "versionName": "1.1.0",
