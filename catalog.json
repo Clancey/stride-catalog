@@ -1,24 +1,56 @@
 {
   "schema": 1,
-  "generated": "2026-08-15T22:23:43Z",
+  "generated": "2026-08-24T06:36:15Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 12,
-      "versionName": "1.0.11",
+      "versionCode": 13,
+      "versionName": "1.1.0",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-12/io.stride.spikes-12.apk",
-      "sizeBytes": 52763923,
-      "sha256": "04316d95529b0cae7e6022e235db26a6cb7a9e190ac3a88c37a54e92cd0ffb8b",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-13/io.stride.spikes-13.apk",
+      "sizeBytes": 52847131,
+      "sha256": "15acf46105f29d1037be0c4cf43b22bd9a2257bb8268c2541d951866060548c8",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59",
-      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-12"
+      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-13",
+      "releaseNotes": [
+        {
+          "versionCode": 13,
+          "versionName": "1.1.0",
+          "date": "2026-08-23",
+          "notes": "Stride can now drive equipment that isn't iFit's. Until now it reached the treadmill one way: through iFit's own GlassOS service on the console. This release adds two more paths, and you choose between them under Settings \u2192 Advanced \u2192 Machine connection.\n\nDirect hardware access talks to the motor controller underneath GlassOS, over USB or Bluetooth, using the register protocol GlassOS itself speaks. It asks the treadmill which controls it actually has and only offers those, so what works depends on your machine.\n\nBluetooth fitness machine speaks the standard fitness machine profile (FTMS) to equipment that isn't this console at all \u2014 a bike, an elliptical, a rower, or another treadmill. Pair the machine in Android's Bluetooth settings first; Stride only connects to something you have already paired. It reads what the machine says it can do and offers the controls it accepts, and the settings screen names what it found, so a treadmill reporting itself as a rower tells you straight away that Stride is talking to the wrong thing.\n\niFit remains the default and is unchanged. If you don't go looking for these, nothing about your machine behaves differently.\n\nHeart rate straps. Stride will read a paired Bluetooth chest strap and put your heart rate on the metrics strip. It's off until you turn it on, under Settings \u2192 Advanced \u2192 Heart rate. A strap works on any of the three connections above \u2014 it isn't tied to how Stride reaches the treadmill. Machines that report their own heart rate feed the same readout, and a strap is preferred when it has a current reading, because a chest strap measures continuously and a treadmill measures through grips you probably aren't holding.\n\nA real track, and a Play-certifiable build. The lap oval was rebuilt as a track that fills the console, and a sideloaded install can now be certified against Play so apps that check will run.\n\nThe safety key is still the only emergency stop, on every connection. Stride's stop is best-effort and always has been. Everything that protects you \u2014 the speed and incline limits, the ramp limiting, stop preemption \u2014 sits above all three connections in one place, so choosing a different one does not choose different safety rules.\n\nWhat has not been tested on hardware. The direct and Bluetooth paths were built from protocol descriptions recovered and cross-checked against other open-source implementations, not from captures of your machine. Neither has been run against a real treadmill yet. Both are marked experimental in the settings screen and both warn you before switching. If a connection stops answering, switch back to iFit and speed, incline and fan return.\n\nInstalls as an update over 1.0.11.\n\nTested on a NordicTrack Commercial 1750."
+        },
+        {
+          "versionCode": 12,
+          "versionName": "1.0.11",
+          "date": "2026-08-15",
+          "notes": "\u2022 Call Connect, and don't claim a workout the treadmill hasn't started"
+        },
+        {
+          "versionCode": 9,
+          "versionName": "1.0.8",
+          "date": "2026-08-14",
+          "notes": "\u2022 Make Start start a workout, never resume the console's old one"
+        },
+        {
+          "versionCode": 8,
+          "versionName": "1.0.7",
+          "date": "2026-08-14",
+          "notes": "Remembers the last catalog across a restart. The last-check timestamp was persisted but the catalog was not, so a launcher restart inside the 30 minute check guard suppressed the check and left the store empty \u2014 \"not checked yet\", no header badge, while an update was genuinely pending. It stayed hidden until you tapped Check now or half an hour passed. The badge is the only thing that tells you an update exists, and this launcher restarts often, so that was worth fixing properly rather than treating as cosmetic.\n\nThe catalog is now cached after it parses (never before \u2014 one bad deploy would otherwise poison every subsequent start), and the plan is recomputed on restore, because what's installed changes between processes.\n\nRelease automation. The v1.0.6 tag run failed with an empty signer digest that read like a signing failure and wasn't one. Fixed, along with the real cause underneath it: build-tools 37 prints a different certificate format than 36. Tagging a release that was already published now exits green instead of red.\n\nInstalls as an update over 1.0.6 \u2014 the notification-listener grant survives an update, unlike a reinstall.\n\nTested on a NordicTrack Commercial 1750."
+        },
+        {
+          "versionCode": 7,
+          "versionName": "1.0.6",
+          "date": "2026-08-14",
+          "notes": "Install prompts now appear. This firmware was silently dropping the PackageInstaller status broadcast to a manifest-declared receiver, so every install hung forever with no dialog and no error \u2014 the receiver is now registered at runtime and the status intent is action-addressed.\n\nAlso in this release:\n\u2022 checks for updates on startup (gated at 30 minutes), not just on the ~6h schedule\n\u2022 the header badges when Google Play is available to install, not only for updates to installed apps\n\u2022 store rows show real app icons\n\nThe APK is served from the catalog so consoles can fetch it without auth. Consoles running 1.0.5 will offer this as a prompted update."
+        }
+      ]
     },
     {
       "package": "com.amazon.avod.thirdpartyclient",
