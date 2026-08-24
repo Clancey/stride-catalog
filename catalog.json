@@ -1,25 +1,31 @@
 {
   "schema": 1,
-  "generated": "2026-08-24T20:37:06Z",
+  "generated": "2026-08-24T22:17:09Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 14,
-      "versionName": "1.2.0",
+      "versionCode": 15,
+      "versionName": "1.2.1",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-14/io.stride.spikes-14.apk",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-15/io.stride.spikes-15.apk",
       "sizeBytes": 52847131,
-      "sha256": "5edfc324df9ae8716c6a745efd7d2348f7387d916666739f1c7aa9678137bf83",
+      "sha256": "9ac106a393922800a810e59b5d04a0a97e422031ba504080176c745c492c6105",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59",
-      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-14",
+      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-15",
       "releaseNotes": [
+        {
+          "versionCode": 15,
+          "versionName": "1.2.1",
+          "date": "2026-08-24",
+          "notes": "Fixes for the first X22i report. Three separate things were wrong, and between them they explain everything that was seen.\n\nThe overlay no longer flashes. With direct access or Bluetooth selected on a machine Stride could not reach, the whole overlay was being torn down and rebuilt every five seconds. It was rebuilding to show a change in the machine's quick-pick buttons \u2014 on a machine that had never reported any, so nothing had changed and nothing needed rebuilding.\n\nUSB access can now actually be granted. Two faults, one on top of the other. Nothing was listening for Android's answer to the permission prompt, so tapping Allow appeared to do nothing. And the prompt was being requested in a way that meant Android could never report the answer as granted \u2014 the reply always came back as a refusal no matter what you tapped. Stride now asks correctly, listens for the reply, and reconnects the moment access is given.\n\nThe prompt is also raised when you pick direct access in Settings, rather than from a background check. Stride keeps its overlay above everything, and a prompt raised from the background could end up behind it and never be seen \u2014 which looks exactly like the setting doing nothing.\n\nStride now tells you what it actually found. \"Stride checked the USB port and found nothing to talk to\" was true of a console with nothing plugged in, a console Stride does not recognise, and a console it simply hadn't been given access to \u2014 three different problems with three different fixes and one sentence between them. Settings now names what is on the port, including the id numbers of anything unrecognised, and says plainly whether access has been granted. If your machine still does not connect, that line is what to send.\n\nRetrying is gentler. A connection that could not be made was retried every five seconds forever, and each attempt can take longer than that to give up \u2014 so a console that could not connect spent its whole time trying, which is hard on Bluetooth and on the battery of anything paired to it. Stride now backs off, while still picking up a treadmill switched on later.\n\nThe safety key is still the only emergency stop. Nothing about how Stride reaches the machine changes that, on any connection.\n\nStill not tested against a real treadmill on the direct path. It stays experimental and still warns before you switch to it. Switching back to iFit restores speed, incline and fan.\n\nInstalls as an update over 1.2.0.\n\nTested on a NordicTrack Commercial 1750."
+        },
         {
           "versionCode": 14,
           "versionName": "1.2.0",
