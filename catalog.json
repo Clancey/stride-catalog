@@ -1,25 +1,31 @@
 {
   "schema": 1,
-  "generated": "2026-08-24T23:02:59Z",
+  "generated": "2026-08-25T00:44:04Z",
   "apps": [
     {
       "package": "io.stride.spikes",
       "role": "stride",
       "name": "Stride",
-      "versionCode": 16,
-      "versionName": "1.2.2",
+      "versionCode": 17,
+      "versionName": "1.2.3",
       "minSdk": 26,
       "abis": [
         "arm64-v8a",
         "armeabi-v7a",
         "x86_64"
       ],
-      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-16/io.stride.spikes-16.apk",
-      "sizeBytes": 52847127,
-      "sha256": "60c7566b78f983733b54db61eff9375d8822ebb1498df64a6e2d53d6010bbcd3",
+      "url": "https://github.com/Clancey/stride-catalog/releases/download/stride-17/io.stride.spikes-17.apk",
+      "sizeBytes": 52847131,
+      "sha256": "39b39397beeeac6a057cee5cba09438dce1ec48d28b54fca20cb756d455f295c",
       "signerSha256": "92534d3c0cf814e027b8338ea4cfda0f54adc5d5eff34d33463526f572887e59",
-      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-16",
+      "releaseNotesUrl": "https://github.com/Clancey/stride-catalog/releases/tag/stride-17",
       "releaseNotes": [
+        {
+          "versionCode": 17,
+          "versionName": "1.2.3",
+          "date": "2026-08-24",
+          "notes": "Stride now speaks the rest of the X22i's handshake. The last release got the console's USB pipe open. This one fixes what Stride said once it was.\n\nTwo separate things were wrong, and either alone was enough to stop it.\n\nStride was sending malformed commands. Every command in this protocol declares how many bytes of body it carries, and Stride sent all of them empty. Two of them are not empty \u2014 the two that ask the console to describe itself. So the very first command after the successful one was invalid, and the console stopped answering, for that command and for everything after it. That matched the field report exactly: the handshake got one good reply, reported the machine's address, software and register count, and then went quiet forever.\n\nAnd Stride could not unlock the console. Consoles above a certain software version refuse to accept any command that moves the belt until they have been shown a 32-byte answer to a challenge. Stride had no way to produce it, and this project's own notes said so \u2014 that it was a gate the direct connection could never pass. That turned out to be wrong. The answer is not a secret; it is computed from three numbers the console itself reports during the handshake. Stride now computes it and sends it, and re-sends it if a console drops its unlock mid-workout.\n\nThe X22i in the field reports software version 83. The threshold is 75.\n\nSettings will now tell you which of those happened. If a console demands the unlock and rejects Stride's answer, it says so. If it demands one and Stride could not assemble it, it says which piece was missing. Previously all of this arrived as a machine that connected and then ignored you.\n\nEverything here was checked line by line against iFit's own implementation of this protocol rather than inferred from behaviour, including one console-specific correction their code applies to its own numbers before computing the challenge \u2014 omitting it would have failed the unlock on that model only, and looked identical to being refused.\n\nStill unconfirmed on an X22i. No X22i has yet driven a belt under Stride, and this release is the first that could. The two fixes are independent, so it is possible for one to work and the other not to. If it still does not connect, the settings line is more specific than it was and is the thing to send.\n\nThe safety key is still the only emergency stop, on every connection. Nothing here changes what protects you.\n\nInstalls as an update over 1.2.2.\n\nTested on a NordicTrack Commercial 1750. The protocol work is verified against iFit's own code; the X22i path is not yet verified on hardware."
+        },
         {
           "versionCode": 16,
           "versionName": "1.2.2",
@@ -61,12 +67,6 @@
           "versionName": "1.0.7",
           "date": "2026-08-14",
           "notes": "Remembers the last catalog across a restart. The last-check timestamp was persisted but the catalog was not, so a launcher restart inside the 30 minute check guard suppressed the check and left the store empty \u2014 \"not checked yet\", no header badge, while an update was genuinely pending. It stayed hidden until you tapped Check now or half an hour passed. The badge is the only thing that tells you an update exists, and this launcher restarts often, so that was worth fixing properly rather than treating as cosmetic.\n\nThe catalog is now cached after it parses (never before \u2014 one bad deploy would otherwise poison every subsequent start), and the plan is recomputed on restore, because what's installed changes between processes.\n\nRelease automation. The v1.0.6 tag run failed with an empty signer digest that read like a signing failure and wasn't one. Fixed, along with the real cause underneath it: build-tools 37 prints a different certificate format than 36. Tagging a release that was already published now exits green instead of red.\n\nInstalls as an update over 1.0.6 \u2014 the notification-listener grant survives an update, unlike a reinstall.\n\nTested on a NordicTrack Commercial 1750."
-        },
-        {
-          "versionCode": 7,
-          "versionName": "1.0.6",
-          "date": "2026-08-14",
-          "notes": "Install prompts now appear. This firmware was silently dropping the PackageInstaller status broadcast to a manifest-declared receiver, so every install hung forever with no dialog and no error \u2014 the receiver is now registered at runtime and the status intent is action-addressed.\n\nAlso in this release:\n\u2022 checks for updates on startup (gated at 30 minutes), not just on the ~6h schedule\n\u2022 the header badges when Google Play is available to install, not only for updates to installed apps\n\u2022 store rows show real app icons\n\nThe APK is served from the catalog so consoles can fetch it without auth. Consoles running 1.0.5 will offer this as a prompted update."
         }
       ]
     },
