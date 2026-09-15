@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-08-30T05:01:35Z",
+  "generated": "2026-09-15T05:27:31Z",
   "apps": [
     {
       "package": "io.stride.spikes",
@@ -345,8 +345,8 @@
       "package": "org.jellyfin.mobile",
       "role": "app",
       "name": "Jellyfin",
-      "versionCode": 2070299,
-      "versionName": "2.7.2",
+      "versionCode": 2070399,
+      "versionName": "2.7.3",
       "minSdk": 21,
       "abis": [
         "arm64-v8a",
@@ -354,11 +354,11 @@
         "x86",
         "x86_64"
       ],
-      "url": "https://github.com/jellyfin/jellyfin-android/releases/download/v2.7.2/jellyfin-android-v2.7.2-libre-release.apk",
-      "sizeBytes": 8962180,
-      "sha256": "4133d9d72685653df01645f6d728366a4dbd838c359cb2c58ef1db5012c48003",
+      "url": "https://github.com/jellyfin/jellyfin-android/releases/download/v2.7.3/jellyfin-android-v2.7.3-libre-release.apk",
+      "sizeBytes": 8964986,
+      "sha256": "f9f4b3ab46cc9434df811194c2d4351417f4db83a4c1a0facd0a662d69533f7f",
       "signerSha256": "d881796ed2a67ff6ef9f676828723c6b1fa18e09388962cba4abc4a594a69131",
-      "releaseNotesUrl": "https://github.com/jellyfin/jellyfin-android/releases/tag/v2.7.2"
+      "releaseNotesUrl": "https://github.com/jellyfin/jellyfin-android/releases/tag/v2.7.3"
     },
     {
       "package": "tv.pluto.android",
